@@ -7,6 +7,8 @@ plugins {
 group = "me.user"
 version = "1.0-SNAPSHOT"
 
+java.sourceCompatibility = JavaVersion.VERSION_11
+
 repositories {
     mavenCentral()
 }
@@ -22,5 +24,5 @@ tasks.test {
 }
 
 tasks.withType<KotlinCompile>() {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "11"
 }
