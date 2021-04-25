@@ -1,8 +1,8 @@
 package firenze.poker.service
 
 import firenze.poker.exception.InvalidNumberOfPlays
+import firenze.poker.fixture.PokerGameFixture
 import firenze.poker.model.Play
-import firenze.poker.model.PokerGame
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.junit5.MockKExtension
@@ -19,18 +19,15 @@ internal class PokerGameServiceTest {
     private lateinit var service: PokerGameService
 
     @Test
-    fun `should load the plays when start the game given valid plays number`() {
+    fun `should init game config when start the game given valid plays number`() {
         // given
-        val plays = mockk<List<Play>>{
-            every { size } returns 3
-        }
+        val pokerGame = PokerGameFixture.pokerGame()
 
         // when
-        val result = service.start(plays)
+        val result = service.start(pokerGame.plays)
 
         // then
-        val expect = PokerGame(plays = plays)
-        assertEquals(expect, result)
+        assertEquals(pokerGame, result)
     }
 
     @Test
