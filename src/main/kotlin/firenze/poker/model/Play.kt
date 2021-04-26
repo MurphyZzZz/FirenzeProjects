@@ -1,5 +1,7 @@
 package firenze.poker.model
 
+import firenze.poker.enums.Actions
+
 class Play(
     val name: String,
     val amounts: Int
@@ -8,5 +10,10 @@ class Play(
 
     fun setCard(card: Card){
         cards.add(card)
+    }
+
+    fun takeAction(availableActions: MutableList<Actions>, currentMaximumBetAmounts: Int): Action {
+        // TODO: mock play's action
+        return Action(action = Actions.Bet, amounts = 10)
     }
 }

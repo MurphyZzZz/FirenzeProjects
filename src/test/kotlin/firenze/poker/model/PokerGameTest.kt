@@ -32,4 +32,18 @@ internal class PokerGameTest {
         // then
         assertEquals(2, pokerGame.plays[0].cards.size)
     }
+
+    @Test
+    fun `should each player take actions in turn when start the round`() {
+        // given
+        assertEquals(0, pokerGame.pot.amounts)
+        assertEquals(emptyList(), pokerGame.hasDoneActionPlays)
+
+        // when
+        pokerGame.startRound()
+
+        // then
+        assertEquals(emptyList(), pokerGame.waitingForActionPlays)
+        assertEquals(30, pokerGame.pot.amounts)
+    }
 }
