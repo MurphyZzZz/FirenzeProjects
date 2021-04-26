@@ -22,9 +22,9 @@ object PokerGameFixture {
     }
 
     fun plays(): List<Play> {
-        val play1 = Play("Lisa", amounts = 10, cards = cardsForPlay())
-        val play2 = Play("Lisa", amounts = 10, cards = cardsForPlay())
-        val play3 = Play("Aaron", amounts = 10, cards = cardsForPlay())
+        val play1 = Play("Lisa", amounts = 10)
+        val play2 = Play("Lisa", amounts = 10)
+        val play3 = Play("Aaron", amounts = 10)
         return listOf(play1, play2, play3)
     }
 

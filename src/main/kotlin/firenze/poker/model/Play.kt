@@ -1,7 +1,12 @@
 package firenze.poker.model
 
-data class Play(
+class Play(
     val name: String,
-    val amounts: Int,
-    val cards: List<Card>
-)
+    val amounts: Int
+){
+    val cards: MutableList<Card> = mutableListOf()
+
+    fun setCard(card: Card){
+        cards.add(card)
+    }
+}

@@ -16,6 +16,10 @@ class Deck {
     fun shuffleCards() {
         shuffle(cards)
     }
+
+    fun getCard(): Card {
+        return cards.removeFirst()
+    }
 }
 
 
