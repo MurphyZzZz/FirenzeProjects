@@ -30,7 +30,13 @@ class PokerGame(
     fun startRound() {
         waitingForActionPlayers = initWaitingActionList()
 
-        while (waitingForActionPlayers.firstOrNull() != null){
+        playerTakeActionInTurn()
+
+        prepareForNextRound()
+    }
+
+    private fun playerTakeActionInTurn() {
+        while (waitingForActionPlayers.firstOrNull() != null) {
             currentActionPlayer = waitingForActionPlayers.removeFirst()
 
             val currentActionAmounts = currentActionPlayer.takeAction(availableActions, currentMaximumBetAmounts).amounts
@@ -39,6 +45,9 @@ class PokerGame(
 
             hasDoneActionPlays.add(currentActionPlayer)
         }
+    }
+
+    private fun prepareForNextRound() {
         Rounds.getNextRound(round)?.let {
             round = it
             hasDoneActionPlays.clear()
