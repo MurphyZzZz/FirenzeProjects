@@ -6,7 +6,7 @@ import firenze.poker.enums.Rounds
 class PokerGame(
     val players: List<Player>
 ) {
-    val round = Rounds.PreFlop
+    var round = Rounds.PreFlop
     val pot = Pot(amounts = 0)
     val communityCards: List<Card> = mutableListOf<Card>()
     private val deck = Deck()
@@ -38,6 +38,11 @@ class PokerGame(
             currentMaximumBetAmounts = currentActionAmounts.coerceAtLeast(currentMaximumBetAmounts)
 
             hasDoneActionPlays.add(currentActionPlayer)
+        }
+        Rounds.getNextRound(round)?.let {
+            round = it
+            hasDoneActionPlays.clear()
+            currentMaximumBetAmounts = 0
         }
     }
 

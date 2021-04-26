@@ -1,5 +1,6 @@
 package firenze.poker.model
 
+import firenze.poker.enums.Rounds
 import firenze.poker.fixture.PokerGameFixture
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
@@ -13,7 +14,7 @@ internal class PokerGameTest {
         val play = PokerGameFixture.plays()
         val pokerGame = PokerGame(players = play)
         assertEquals(0, pokerGame.pot.amounts)
-        assertEquals("Pre-flop", pokerGame.round.name)
+        assertEquals(Rounds.PreFlop, pokerGame.round)
         assertEquals(0, pokerGame.communityCards.size)
         assertEquals(0, pokerGame.buttonPosition)
         assertEquals(1, pokerGame.smallBlindPosition)
@@ -44,7 +45,19 @@ internal class PokerGameTest {
 
         // then
         assertEquals(emptyList(), pokerGame.waitingForActionPlayers)
-        assertEquals(pokerGame.players, pokerGame.hasDoneActionPlays)
         assertEquals(30, pokerGame.pot.amounts)
+    }
+
+    @Test
+    fun `should enter next round when this round finish`() {
+        // given
+        assertEquals(Rounds.PreFlop, pokerGame.round)
+
+        // when
+        pokerGame.startRound()
+
+        // then
+        assertEquals(Rounds.Flop, pokerGame.round)
+        assertEquals(emptyList(), pokerGame.hasDoneActionPlays)
     }
 }
