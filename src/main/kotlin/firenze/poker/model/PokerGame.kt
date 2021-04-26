@@ -4,7 +4,7 @@ import firenze.poker.enums.Actions
 import firenze.poker.enums.Rounds
 
 class PokerGame(
-    val plays: List<Play>
+    val players: List<Player>
 ) {
     val round = Rounds.PreFlop
     val pot = Pot(amounts = 0)
@@ -14,38 +14,38 @@ class PokerGame(
     val smallBlindPosition = 1
     val bigBlindPosition = 2
 
-    lateinit var waitingForActionPlays: MutableList<Play>
-    val hasDoneActionPlays = mutableListOf<Play>()
+    lateinit var waitingForActionPlayers: MutableList<Player>
+    val hasDoneActionPlays = mutableListOf<Player>()
     val availableActions = mutableListOf<Actions>()
-    lateinit var currentActionPlay: Play
+    lateinit var currentActionPlayer: Player
     var currentMaximumBetAmounts = 0
 
     fun dealCards() {
-        plays.forEach {
+        players.forEach {
             it.setCard(deck.getCard())
             it.setCard(deck.getCard())
         }
     }
 
     fun startRound() {
-        waitingForActionPlays = initWaitingActionList()
+        waitingForActionPlayers = initWaitingActionList()
 
-        while (waitingForActionPlays.firstOrNull() != null){
-            currentActionPlay = waitingForActionPlays.removeFirst()
+        while (waitingForActionPlayers.firstOrNull() != null){
+            currentActionPlayer = waitingForActionPlayers.removeFirst()
 
-            val currentActionAmounts = currentActionPlay.takeAction(availableActions, currentMaximumBetAmounts).amounts
+            val currentActionAmounts = currentActionPlayer.takeAction(availableActions, currentMaximumBetAmounts).amounts
             pot.amounts += currentActionAmounts
             currentMaximumBetAmounts = currentActionAmounts.coerceAtLeast(currentMaximumBetAmounts)
 
-            hasDoneActionPlays.add(currentActionPlay)
+            hasDoneActionPlays.add(currentActionPlayer)
         }
     }
 
-    private fun initWaitingActionList(): MutableList<Play> {
+    private fun initWaitingActionList(): MutableList<Player> {
         return if (round == Rounds.PreFlop) {
-            (plays.subList(bigBlindPosition + 1, plays.size) + plays.subList(0, bigBlindPosition + 1)).toMutableList()
+            (players.subList(bigBlindPosition + 1, players.size) + players.subList(0, bigBlindPosition + 1)).toMutableList()
         } else {
-            (plays.subList(buttonPosition + 1, plays.size) + plays[buttonPosition]).toMutableList()
+            (players.subList(buttonPosition + 1, players.size) + players[buttonPosition]).toMutableList()
         }
     }
 }

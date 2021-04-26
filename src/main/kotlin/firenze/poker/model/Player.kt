@@ -2,7 +2,7 @@ package firenze.poker.model
 
 import firenze.poker.enums.Actions
 
-class Play(
+class Player(
     val name: String,
     val amounts: Int
 ){

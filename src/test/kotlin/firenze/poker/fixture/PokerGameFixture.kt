@@ -1,7 +1,7 @@
 package firenze.poker.fixture
 
 import firenze.poker.model.Card
-import firenze.poker.model.Play
+import firenze.poker.model.Player
 import firenze.poker.model.PokerGame
 import firenze.poker.model.Pot
 import firenze.poker.model.Round
@@ -21,10 +21,10 @@ object PokerGameFixture {
         return Round("Pre-flop")
     }
 
-    fun plays(): List<Play> {
-        val play1 = Play("Lisa", amounts = 10)
-        val play2 = Play("Lisa", amounts = 10)
-        val play3 = Play("Aaron", amounts = 10)
+    fun plays(): List<Player> {
+        val play1 = Player("Lisa", amounts = 10)
+        val play2 = Player("Lisa", amounts = 10)
+        val play3 = Player("Aaron", amounts = 10)
         return listOf(play1, play2, play3)
     }
 
@@ -34,15 +34,15 @@ object PokerGameFixture {
         return listOf(card1, card2)
     }
 
-    fun button(): Play {
+    fun button(): Player {
         return plays()[0]
     }
 
-    fun smallBlind(): Play {
+    fun smallBlind(): Player {
         return plays()[1]
     }
 
-    fun bigBlind(): Play {
+    fun bigBlind(): Player {
         return plays()[2]
     }
 }

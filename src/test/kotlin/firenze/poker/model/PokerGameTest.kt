@@ -11,7 +11,7 @@ internal class PokerGameTest {
     @Test
     fun `should init poker game when create a poker game object`() {
         val play = PokerGameFixture.plays()
-        val pokerGame = PokerGame(plays = play)
+        val pokerGame = PokerGame(players = play)
         assertEquals(0, pokerGame.pot.amounts)
         assertEquals("Pre-flop", pokerGame.round.name)
         assertEquals(0, pokerGame.communityCards.size)
@@ -24,13 +24,13 @@ internal class PokerGameTest {
     @Test
     fun `should each play have two cards when button deal cards`() {
         // given
-        assertEquals(0, pokerGame.plays[0].cards.size)
+        assertEquals(0, pokerGame.players[0].cards.size)
 
         // when
         pokerGame.dealCards()
 
         // then
-        assertEquals(2, pokerGame.plays[0].cards.size)
+        assertEquals(2, pokerGame.players[0].cards.size)
     }
 
     @Test
@@ -43,7 +43,8 @@ internal class PokerGameTest {
         pokerGame.startRound()
 
         // then
-        assertEquals(emptyList(), pokerGame.waitingForActionPlays)
+        assertEquals(emptyList(), pokerGame.waitingForActionPlayers)
+        assertEquals(pokerGame.players, pokerGame.hasDoneActionPlays)
         assertEquals(30, pokerGame.pot.amounts)
     }
 }
