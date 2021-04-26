@@ -27,7 +27,7 @@ internal class PokerGameServiceTest {
         val result = service.start(pokerGame.plays)
 
         // then
-        assertEquals(pokerGame, result)
+        assertEquals(pokerGame.plays, result.plays)
     }
 
     @Test

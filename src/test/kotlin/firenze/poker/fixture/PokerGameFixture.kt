@@ -9,13 +9,7 @@ import firenze.poker.model.Round
 object PokerGameFixture {
     fun pokerGame(): PokerGame {
         return PokerGame(
-            plays(),
-            round(),
-            pot(),
-            emptyList(),
-            button(),
-            smallBlind(),
-            bigBlind()
+            plays()
         )
     }
 
