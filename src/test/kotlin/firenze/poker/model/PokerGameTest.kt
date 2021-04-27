@@ -3,11 +3,17 @@ package firenze.poker.model
 import firenze.poker.enums.Rounds
 import firenze.poker.fixture.PokerGameFixture
 import kotlin.test.assertEquals
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class PokerGameTest {
 
-    private val pokerGame = PokerGameFixture.pokerGame()
+    lateinit var pokerGame: PokerGame
+
+    @BeforeEach
+    fun setUp(){
+        pokerGame = PokerGameFixture.pokerGame()
+    }
 
     @Test
     fun `should init poker game when create a poker game object`() {
@@ -59,5 +65,17 @@ internal class PokerGameTest {
         // then
         assertEquals(Rounds.Flop, pokerGame.round)
         assertEquals(emptyList(), pokerGame.hasDoneActionPlays)
+    }
+
+    @Test
+    fun `deal community cards when start a round`() {
+        // given
+        assertEquals(0, pokerGame.communityCards.size)
+
+        // when
+        pokerGame.startRound()
+
+        // then
+        assertEquals(1, pokerGame.communityCards.size)
     }
 }

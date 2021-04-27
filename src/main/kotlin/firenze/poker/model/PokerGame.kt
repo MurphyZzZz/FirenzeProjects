@@ -8,7 +8,7 @@ class PokerGame(
 ) {
     var round = Rounds.PreFlop
     val pot = Pot(amounts = 0)
-    val communityCards: List<Card> = mutableListOf<Card>()
+    val communityCards: MutableList<Card> = mutableListOf()
     private val deck = Deck()
     val buttonPosition = 0
     val smallBlindPosition = 1
@@ -27,7 +27,16 @@ class PokerGame(
         }
     }
 
+    fun dealCommunityCard(){
+        val newCard = deck.getCard()
+        newCard.showCard()
+        communityCards.add(newCard)
+    }
+
     fun startRound() {
+
+        dealCommunityCard()
+
         waitingForActionPlayers = initWaitingActionList()
 
         playerTakeActionInTurn()

@@ -13,7 +13,7 @@ class Player(
     }
 
     fun takeAction(availableActions: MutableList<Actions>, currentMaximumBetAmounts: Int): Action {
-        // TODO: mock play's action
+        // TODO: mock play's action and reduce player's amount
         return Action(action = Actions.Bet, amounts = 10)
     }
 }

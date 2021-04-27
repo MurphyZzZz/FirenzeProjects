@@ -9,3 +9,7 @@ data class Card(
         val suits = arrayOf("Diamonds", "Clubs", "Hearts", "Spades")
     }
 }
+
+fun Card.showCard(){
+    println("This card's rank - ${Card.ranks[this.rank]} and suit - ${Card.suits[this.suit]}")
+}
