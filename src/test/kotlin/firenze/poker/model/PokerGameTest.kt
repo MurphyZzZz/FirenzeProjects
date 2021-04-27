@@ -56,7 +56,7 @@ internal class PokerGameTest {
 
         // then
         assertEquals(emptyList(), pokerGame.waitingForActionPlayers)
-        assertEquals(30, pokerGame.pots.last().amounts)
+        assertEquals(30, pokerGame.currentdAmountsInPot)
     }
 
     @Test
@@ -163,7 +163,7 @@ internal class PokerGameTest {
 
         // then
         assertEquals(player1, pokerGame.foldPlayers[0])
-        assertEquals(70, pokerGame.pots.last().amounts)
+        assertEquals(70, pokerGame.currentdAmountsInPot)
         assertEquals(listOf(player2, player3, player1), pokerGame.hasDoneActionPlays)
     }
 
@@ -194,7 +194,7 @@ internal class PokerGameTest {
         pokerGame.startRound()
 
         // then
-        assertEquals(90, pokerGame.pots.last().amounts)
+        assertEquals(90, pokerGame.currentdAmountsInPot)
     }
 
     @Test
@@ -224,9 +224,39 @@ internal class PokerGameTest {
 
         // then
         assertEquals(listOf(player1, player2), pokerGame.hasDoneActionPlays)
-        assertEquals(20, pokerGame.pots.last().amounts)
-        assertEquals(listOf(player1, player2), pokerGame.pots.last().potentialWinners)
+        assertEquals(20, pokerGame.currentdAmountsInPot)
         assertEquals(40, pokerGame.pots[0].amounts)
         assertEquals(listOf(player3, player1, player2), pokerGame.pots[0].potentialWinners)
+    }
+
+    @Test
+    fun `should end of the game in advance when only one player left`() {
+        // given
+        val canBet = listOf(Actions.Bet, Actions.Raise, Actions.Check, Actions.Fold)
+        val canNotBet = listOf(Actions.Call, Actions.Raise, Actions.Fold)
+        val canCheckNotBet = listOf(Actions.Call, Actions.Raise, Actions.Check, Actions.Fold)
+        val player1 = mockk<Player>{
+            every { name } returns "player1"
+            every { takeAction(canBet, 0) } returns Action(Actions.Bet, 10)
+            every { takeAction(canNotBet, 20) } returns Action(Actions.Fold, 0)
+        }
+        val player2 = mockk<Player>{
+            every { name } returns "player2"
+            every { takeAction(canNotBet, 10) } returns Action(Actions.Call, 10)
+            every { takeAction(canNotBet, 20) } returns Action(Actions.Fold, 0)
+        }
+        val player3 = mockk<Player>{
+            every { name } returns "player3"
+            every { takeAction(canNotBet, 10) } returns Action(Actions.Raise, 30)
+        }
+        val pokerGame = PokerGame(listOf(player1, player2, player3))
+
+        // when
+        pokerGame.startRound()
+        pokerGame.startRound()
+
+        // then
+        assertEquals(50, pokerGame.pots[0].amounts)
+        assertEquals(listOf(player3), pokerGame.pots[0].potentialWinners)
     }
 }

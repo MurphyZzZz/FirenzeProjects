@@ -113,7 +113,7 @@ class PokerGame(
                     val potentialWinners = hasDoneActionPlays - foldPlayers
                     val newPot = Pot()
                     newPot.amounts = totalAmountsAfterAllIn
-                    newPot.potentialWinners = potentialWinners
+                    newPot.potentialWinners.addAll(potentialWinners)
                     pots.add(newPot)
                     currentdAmountsInPot -= totalAmountsAfterAllIn
 
@@ -151,10 +151,9 @@ class PokerGame(
         Rounds.getNextRound(round)?.let {
             round = it
         }
-        val newPot = Pot()
-        newPot.amounts = currentdAmountsInPot
-        newPot.potentialWinners = (hasDoneActionPlays - foldPlayers)
-        pots.add(newPot)
+        if (round == Rounds.River){
+            gameOver()
+        }
     }
 
     private fun initWaitingActionList() {
@@ -170,6 +169,19 @@ class PokerGame(
         hasDoneActionPlays.clear()
         currentMaximumBetAmounts = 0
 
-        // TODO: if waiting list length is equals to 1, the game finish in advance
+        if (waitingForActionPlayers.size == 1){
+            val newPot = Pot()
+            newPot.amounts = currentdAmountsInPot
+            newPot.potentialWinners.addAll(waitingForActionPlayers)
+            pots.add(newPot)
+            waitingForActionPlayers.removeFirst()
+        }
+    }
+
+    private fun gameOver(){
+        val newPot = Pot()
+        newPot.amounts = currentdAmountsInPot
+        newPot.potentialWinners.addAll(hasDoneActionPlays - foldPlayers)
+        pots.add(newPot)
     }
 }
