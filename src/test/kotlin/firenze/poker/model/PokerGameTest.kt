@@ -1,7 +1,10 @@
 package firenze.poker.model
 
+import firenze.poker.enums.Actions
 import firenze.poker.enums.Rounds
 import firenze.poker.fixture.PokerGameFixture
+import io.mockk.every
+import io.mockk.mockk
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -45,6 +48,7 @@ internal class PokerGameTest {
         // given
         assertEquals(0, pokerGame.pot.amounts)
         assertEquals(emptyList(), pokerGame.hasDoneActionPlays)
+        assertEquals(emptyList(), pokerGame.waitingForActionPlayers)
 
         // when
         pokerGame.startRound()
@@ -58,13 +62,14 @@ internal class PokerGameTest {
     fun `should enter next round when this round finish`() {
         // given
         assertEquals(Rounds.PreFlop, pokerGame.round)
+        assertEquals(emptyList(), pokerGame.waitingForActionPlayers)
 
         // when
         pokerGame.startRound()
 
         // then
         assertEquals(Rounds.Flop, pokerGame.round)
-        assertEquals(emptyList(), pokerGame.hasDoneActionPlays)
+        assertEquals(pokerGame.players, pokerGame.hasDoneActionPlays)
     }
 
     @Test
@@ -77,5 +82,61 @@ internal class PokerGameTest {
 
         // then
         assertEquals(1, pokerGame.communityCards.size)
+    }
+
+    @Test
+    fun `should record fold players when there are some players choose to fold`() {
+        // given
+        val canBet = listOf(Actions.Bet, Actions.Raise, Actions.Check, Actions.Fold)
+        val canNotBet = listOf(Actions.Call, Actions.Raise, Actions.Fold)
+        val canCheckNotBet = listOf(Actions.Call, Actions.Raise, Actions.Check, Actions.Fold)
+        val player1 = mockk<Player>{
+            every { takeAction(canBet, 0) } returns Action(Actions.Bet, 10)
+            every { takeAction(canNotBet, 20) } returns Action(Actions.Fold, 0)
+        }
+        val player2 = mockk<Player>{
+            every { takeAction(canNotBet, 10) } returns Action(Actions.Raise, 30)
+            every { takeAction(canCheckNotBet, 0) } returns Action(Actions.Check, 0)
+        }
+        val player3 = mockk<Player>{
+            every { takeAction(canNotBet, 30) } returns Action(Actions.Call, 30)
+            every { takeAction(canCheckNotBet, 0) } returns Action(Actions.Check, 0)
+        }
+        val pokerGame = PokerGame(listOf(player1, player2, player3))
+
+        // when
+        pokerGame.startRound()
+
+        // then
+        assertEquals(player1, pokerGame.foldPlayers[0])
+        assertEquals(70, pokerGame.pot.amounts)
+        assertEquals(listOf(player3, player1, player2), pokerGame.hasDoneActionPlays)
+    }
+
+    @Test
+    fun `should rearrange waiting list when player took actions`() {
+        // given
+        val canBet = listOf(Actions.Bet, Actions.Raise, Actions.Check, Actions.Fold)
+        val canNotBet = listOf(Actions.Call, Actions.Raise, Actions.Fold)
+        val canCheckNotBet = listOf(Actions.Call, Actions.Raise, Actions.Check, Actions.Fold)
+        val player1 = mockk<Player>{
+            every { takeAction(canBet, 0) } returns Action(Actions.Bet, 10)
+            every { takeAction(canNotBet, 20) } returns Action(Actions.Call, 20)
+        }
+        val player2 = mockk<Player>{
+            every { takeAction(canNotBet, 10) } returns Action(Actions.Raise, 30)
+            every { takeAction(canCheckNotBet, 0) } returns Action(Actions.Check, 0)
+        }
+        val player3 = mockk<Player>{
+            every { takeAction(canNotBet, 30) } returns Action(Actions.Call, 30)
+            every { takeAction(canCheckNotBet, 0) } returns Action(Actions.Check, 0)
+        }
+        val pokerGame = PokerGame(listOf(player1, player2, player3))
+
+        // when
+        pokerGame.startRound()
+
+        // then
+        assertEquals(90, pokerGame.pot.amounts)
     }
 }

@@ -12,8 +12,9 @@ class Player(
         cards.add(card)
     }
 
-    fun takeAction(availableActions: MutableList<Actions>, currentMaximumBetAmounts: Int): Action {
+    fun takeAction(availableActions: List<Actions>, minimumActionMounts: Int): Action {
         // TODO: mock play's action and reduce player's amount
+        println("You have listed available actions: ${availableActions.joinToString(",")}, and minimumActionMounts is $minimumActionMounts")
         return Action(action = Actions.Bet, amounts = 10)
     }
 }
