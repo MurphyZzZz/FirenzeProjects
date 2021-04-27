@@ -1,5 +1,6 @@
 package firenze.poker.model
 
-data class Pot(
-    var amounts: Int
-)
+class Pot{
+    var amounts = 0
+    var potentialWinners = emptyList<Player>()
+}

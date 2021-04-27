@@ -14,7 +14,7 @@ object PokerGameFixture {
     }
 
     fun pot(): Pot {
-        return Pot(0)
+        return Pot()
     }
 
     fun round(): Round {

@@ -5,5 +5,6 @@ enum class Actions {
     Bet,
     Call,
     Raise,
-    Check
+    Check,
+    AllIn
 }
