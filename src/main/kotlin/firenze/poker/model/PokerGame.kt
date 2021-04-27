@@ -35,11 +35,20 @@ class PokerGame(
     }
 
     private fun dealCommunityCard() {
-        // TODO: if the round is flop, it should deal 3 cards
-        // TODO: if the round is pre-flop, it should not deal cards
-        val newCard = deck.getCard()
-        newCard.showCard()
-        communityCards.add(newCard)
+        val getOneCard: () -> Unit = {
+            val newCard = deck.getCard()
+            newCard.showCard()
+            communityCards.add(newCard)
+        }
+        if (round == Rounds.Flop){
+            for (i in 0..2){
+                getOneCard()
+            }
+        } else if(round == Rounds.PreFlop){
+            return
+        } else {
+            getOneCard()
+        }
     }
 
     fun startRound() {

@@ -5,6 +5,7 @@ import firenze.poker.enums.Rounds
 import firenze.poker.fixture.PokerGameFixture
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.spyk
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -73,7 +74,7 @@ internal class PokerGameTest {
     }
 
     @Test
-    fun `deal community cards when start a round`() {
+    fun `deal community cards when start pre-flop round`() {
         // given
         assertEquals(0, pokerGame.communityCards.size)
 
@@ -81,7 +82,57 @@ internal class PokerGameTest {
         pokerGame.startRound()
 
         // then
-        assertEquals(1, pokerGame.communityCards.size)
+        assertEquals(0, pokerGame.communityCards.size)
+    }
+
+    @Test
+    fun `deal community cards when start a flop round`() {
+        // given
+        val pokerGame1 = spyk(PokerGame(pokerGame.players))
+        pokerGame1.round = Rounds.Flop
+
+        every {
+            pokerGame1["initWaitingActionList"]()
+        } returns ""
+
+        every {
+            pokerGame1["playerTakeActionInTurn"]()
+        } returns ""
+
+        every {
+            pokerGame1["prepareForNextRound"]()
+        } returns ""
+
+        // when
+        pokerGame1.startRound()
+
+        // then
+        assertEquals(3, pokerGame1.communityCards.size)
+    }
+
+    @Test
+    fun `deal community cards when start other round except pre-flop and flop`() {
+        // given
+        val pokerGame1 = spyk(PokerGame(pokerGame.players))
+        pokerGame1.round = Rounds.River
+
+        every {
+            pokerGame1["initWaitingActionList"]()
+        } returns ""
+
+        every {
+            pokerGame1["playerTakeActionInTurn"]()
+        } returns ""
+
+        every {
+            pokerGame1["prepareForNextRound"]()
+        } returns ""
+
+        // when
+        pokerGame1.startRound()
+
+        // then
+        assertEquals(1, pokerGame1.communityCards.size)
     }
 
     @Test
