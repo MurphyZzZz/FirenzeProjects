@@ -120,7 +120,6 @@ class PokerGame(
                     hasDoneActionPlays.remove(allInPlayer)
                     allInFlag = false
                     allInPlayer = null
-//                    allInPlayers.clear()
                     allInAmounts = 0
                     continue
                 }else{

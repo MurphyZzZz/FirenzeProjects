@@ -4,7 +4,7 @@ import firenze.poker.enums.Actions
 
 class Player(
     val name: String,
-    val amounts: Int
+    var amounts: Int
 ){
     val cards: MutableList<Card> = mutableListOf()
 
