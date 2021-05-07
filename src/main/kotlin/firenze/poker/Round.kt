@@ -1,10 +1,10 @@
 import firenze.poker.Action
 import firenze.poker.Player
-import firenze.poker.enums.Round
+import firenze.poker.enums.Rounds
 
-class Game(private vararg val players: Player) {
+class Round(private vararg val players: Player) {
 
-    var round: Round = Round.PREFLOP
+    var round: Rounds = Rounds.PREFLOP
     var currentBid: Int = 0
     var minimumWager: Int = 1
     var pot: Int = 0
@@ -13,6 +13,7 @@ class Game(private vararg val players: Player) {
     val allInPlayers = mutableListOf<Player>()
     val hasDonePlayersAndWager = players.associate { it to 0 }.toMutableMap()
 
+    // TODO: push action down to player
     fun execute(action: Action) {
         val activePlayer = waitingPlayers.removeFirst()
         action.execute(activePlayer, this)
@@ -60,7 +61,7 @@ class Game(private vararg val players: Player) {
     private fun nextRound(){
         val wagerOfHasDonePlayers = hasDonePlayersAndWager.keys.filter { activePlayers.contains(it) }.map { hasDonePlayersAndWager[it] }
         if (wagerOfHasDonePlayers.all { it == currentBid } && (hasDonePlayersAndWager.keys.size == activePlayers.size)){
-            round = Round.values()[round.ordinal + 1]
+            round = Rounds.values()[round.ordinal + 1]
         }
     }
 }

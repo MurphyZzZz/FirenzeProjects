@@ -1,6 +1,6 @@
 package firenze.poker.enums
 
-enum class Round {
+enum class Rounds {
     PREFLOP,
     FLOP
 }

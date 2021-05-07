@@ -1,43 +1,43 @@
 package firenze.poker
 
-import Game
+import Round
 
 interface Action {
-    fun execute(player: Player, game: Game)
+    fun execute(player: Player, round: Round)
 }
 
 class Bet: Action {
-    override fun execute(player: Player, game: Game) {
-        game.betExecute(player)
+    override fun execute(player: Player, round: Round) {
+        round.betExecute(player)
     }
 
 }
 
 class Call: Action {
-    override fun execute(player: Player, game: Game) {
-        game.callExecute(player)
+    override fun execute(player: Player, round: Round) {
+        round.callExecute(player)
     }
 }
 class Check: Action {
-    override fun execute(player: Player, game: Game) {
-        game.checkExecute(player)
+    override fun execute(player: Player, round: Round) {
+        round.checkExecute(player)
     }
 }
 
 class Fold: Action {
-    override fun execute(player: Player, game: Game) {
-        game.foldExecute(player)
+    override fun execute(player: Player, round: Round) {
+        round.foldExecute(player)
     }
 }
 
 class Raise: Action {
-    override fun execute(player: Player, game: Game) {
-        game.raiseExecute(player)
+    override fun execute(player: Player, round: Round) {
+        round.raiseExecute(player)
     }
 }
 
 class AllIn: Action {
-    override fun execute(player: Player, game: Game) {
-        game.allInExecute(player)
+    override fun execute(player: Player, round: Round) {
+        round.allInExecute(player)
     }
 }

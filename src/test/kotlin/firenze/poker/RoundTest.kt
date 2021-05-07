@@ -1,18 +1,18 @@
 package firenze.poker
 
-import Game
-import firenze.poker.enums.Round
+import Round
+import firenze.poker.enums.Rounds
 import io.mockk.every
 import io.mockk.mockk
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 
-internal class GameTest {
+internal class RoundTest {
 
     @Test
     fun `should load players, set pot and waitingPlayers`() {
         // given && when
-        val game = Game(Player("A"), Player("B"), Player("C"))
+        val game = Round(Player("A"), Player("B"), Player("C"))
 
         // then
         assertEquals(0, game.pot)
@@ -22,7 +22,7 @@ internal class GameTest {
     @Test
     fun `should player B be next player and calculate pot and waiting players when player A bet`() {
         //given
-        val game = Game(Player("A"), Player("B"), Player("C"))
+        val game = Round(Player("A"), Player("B"), Player("C"))
 
         // when
         game.execute(Bet())
@@ -35,7 +35,7 @@ internal class GameTest {
     @Test
     fun `should calculate pot and waiting players when player A bet and player B call`() {
         //given
-        val game = Game(Player("A"), Player("B"), Player("C"))
+        val game = Round(Player("A"), Player("B"), Player("C"))
 
         // when
         game.execute(Bet())
@@ -49,7 +49,7 @@ internal class GameTest {
     @Test
     fun `should calculate pot and waiting players when player A fold`() {
         //given
-        val game = Game(Player("A"), Player("B"), Player("C"))
+        val game = Round(Player("A"), Player("B"), Player("C"))
 
         // when
         game.execute(Fold())
@@ -63,7 +63,7 @@ internal class GameTest {
     @Test
     fun `should calculate pot and waiting players when player A check`() {
         //given
-        val game = Game(Player("A"), Player("B"), Player("C"))
+        val game = Round(Player("A"), Player("B"), Player("C"))
 
         // when
         game.execute(Check())
@@ -80,7 +80,7 @@ internal class GameTest {
             every { name } returns "C"
             every { getRaiseWager() } returns 4
         }
-        val game = Game(Player("A"), Player("B"), mockPlayerC)
+        val game = Round(Player("A"), Player("B"), mockPlayerC)
 
         // when
         game.execute(Bet())
@@ -90,13 +90,13 @@ internal class GameTest {
         // then
         assertEquals(6, game.pot)
         assertEquals(listOf("A", "B", "C"), game.waitingPlayers.map { it.name })
-        assertEquals(Round.PREFLOP, game.round)
+        assertEquals(Rounds.PREFLOP, game.round)
     }
 
     @Test
     fun `should enter next round when all players took bids`() {
         //given
-        val game = Game(Player("A"), Player("B"), Player("C"))
+        val game = Round(Player("A"), Player("B"), Player("C"))
 
         // when
         assertEquals("A", game.waitingPlayers.first().name)
@@ -108,7 +108,7 @@ internal class GameTest {
 
         // then
         assertEquals(3, game.pot)
-        assertEquals(Round.FLOP, game.round)
+        assertEquals(Rounds.FLOP, game.round)
         assertEquals(1, game.hasDonePlayersAndWager[Player("A")])
         assertEquals(1, game.hasDonePlayersAndWager[Player("B")])
         assertEquals(1, game.hasDonePlayersAndWager[Player("C")])
@@ -117,7 +117,7 @@ internal class GameTest {
     @Test
     fun `should not enter next round when some players didn't take bids`() {
         //given
-        val game = Game(Player("A"), Player("B"), Player("C"))
+        val game = Round(Player("A"), Player("B"), Player("C"))
 
         // when
         assertEquals("A", game.waitingPlayers.first().name)
@@ -126,13 +126,13 @@ internal class GameTest {
         game.execute(Call())
 
         // then
-        assertEquals(Round.PREFLOP, game.round)
+        assertEquals(Rounds.PREFLOP, game.round)
     }
 
     @Test
-    fun `should make up the difference between current bid and privous bid after someone raise `() {
+    fun `should make up the difference between current bid and previous bid after someone raise `() {
         //given
-        val game = Game(Player("A"), Player("B"), Player("C"))
+        val game = Round(Player("A"), Player("B"), Player("C"))
 
         // when
         assertEquals("A", game.waitingPlayers.first().name)
@@ -161,7 +161,7 @@ internal class GameTest {
             every { name } returns "C"
             every { getAllInWager() } returns 4
         }
-        val game = Game(Player("A"), mockPlayerB, mockPlayerC)
+        val game = Round(Player("A"), mockPlayerB, mockPlayerC)
 
         // when
         assertEquals("A", game.waitingPlayers.first().name)
