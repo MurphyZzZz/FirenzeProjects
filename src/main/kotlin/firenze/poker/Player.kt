@@ -2,6 +2,11 @@ package firenze.poker
 
 class Player(val name: String) {
 
+    // TODO: two fold more than big blind bid
+    fun getRaiseWager(): Int {
+        return 0
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

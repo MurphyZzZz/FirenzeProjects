@@ -2,6 +2,8 @@ package firenze.poker
 
 import Game
 import firenze.poker.enums.Round
+import io.mockk.every
+import io.mockk.mockk
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -23,7 +25,7 @@ internal class GameTest {
         val game = Game(Player("A"), Player("B"), Player("C"))
 
         // when
-        game.bet()
+        game.execute(Bet())
 
         // then
         assertEquals(game.currentBid, game.pot)
@@ -36,8 +38,8 @@ internal class GameTest {
         val game = Game(Player("A"), Player("B"), Player("C"))
 
         // when
-        game.bet()
-        game.call()
+        game.execute(Bet())
+        game.execute(Call())
 
         // then
         assertEquals(game.currentBid * 2, game.pot)
@@ -50,7 +52,7 @@ internal class GameTest {
         val game = Game(Player("A"), Player("B"), Player("C"))
 
         // when
-        game.fold()
+        game.execute(Fold())
 
         // then
         assertEquals(0, game.pot)
@@ -64,7 +66,7 @@ internal class GameTest {
         val game = Game(Player("A"), Player("B"), Player("C"))
 
         // when
-        game.check()
+        game.execute(Check())
 
         // then
         assertEquals(0, game.pot)
@@ -74,12 +76,16 @@ internal class GameTest {
     @Test
     fun `should calculate pot and waiting players when player A bet and player B raise`() {
         //given
-        val game = Game(Player("A"), Player("B"), Player("C"))
+        val mockPlayerC = mockk<Player>{
+            every { name } returns "C"
+            every { getRaiseWager() } returns 4
+        }
+        val game = Game(Player("A"), Player("B"), mockPlayerC)
 
         // when
-        game.bet()
-        game.call()
-        game.raise(4)
+        game.execute(Bet())
+        game.execute(Call())
+        game.execute(Raise())
 
         // then
         assertEquals(6, game.pot)
@@ -94,11 +100,11 @@ internal class GameTest {
 
         // when
         assertEquals("A", game.waitingPlayers.first().name)
-        game.bet()
+        game.execute(Bet())
         assertEquals("B", game.waitingPlayers.first().name)
-        game.call()
+        game.execute(Call())
         assertEquals("C", game.waitingPlayers.first().name)
-        game.call()
+        game.execute(Call())
 
         // then
         assertEquals(3, game.pot)
@@ -115,9 +121,9 @@ internal class GameTest {
 
         // when
         assertEquals("A", game.waitingPlayers.first().name)
-        game.bet()
+        game.execute(Bet())
         assertEquals("B", game.waitingPlayers.first().name)
-        game.call()
+        game.execute(Call())
 
         // then
         assertEquals(Round.PREFLOP, game.round)
@@ -130,15 +136,15 @@ internal class GameTest {
 
         // when
         assertEquals("A", game.waitingPlayers.first().name)
-        game.bet()
+        game.execute(Bet())
         val previousBid = game.currentBid
         assertEquals("B", game.waitingPlayers.first().name)
-        game.call()
+        game.execute(Call())
         assertEquals("C", game.waitingPlayers.first().name)
-        game.raise(4)
+        game.execute(Raise())
         val previousPotBeforePlayerATakeAction = game.pot
         assertEquals("A", game.waitingPlayers.first().name)
-        game.call()
+        game.execute(Call())
 
         // then
         assertEquals(game.currentBid - previousBid, game.pot - previousPotBeforePlayerATakeAction)

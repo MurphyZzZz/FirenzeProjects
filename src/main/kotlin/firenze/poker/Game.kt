@@ -1,7 +1,8 @@
+import firenze.poker.Action
 import firenze.poker.Player
 import firenze.poker.enums.Round
 
-class Game(vararg val players: Player) {
+class Game(private vararg val players: Player) {
 
     var round: Round = Round.PREFLOP
     var currentBid: Int = 0
@@ -11,45 +12,43 @@ class Game(vararg val players: Player) {
     val activePlayers = mutableListOf(*players)
     val hasDonePlayersAndWager = players.associate { it to 0 }.toMutableMap()
 
-    fun bet() {
-        val player = waitingPlayers.removeFirst()
+    fun execute(action: Action) {
+        val activePlayer = waitingPlayers.removeFirst()
+        action.execute(activePlayer, this)
+        nextRound()
+    }
+
+    fun betExecute(player: Player) {
         currentBid = minimumWager
         pot += currentBid
-        waitingPlayers.add(player)
         hasDonePlayersAndWager[player] = hasDonePlayersAndWager[player]!! + currentBid
-    }
-
-    fun call() {
-        val player = waitingPlayers.removeFirst()
-        pot += (currentBid - hasDonePlayersAndWager[player]!!)
         waitingPlayers.add(player)
-        hasDonePlayersAndWager[player] = currentBid
-        nextRound()
     }
 
-    fun fold() {
-        val player = waitingPlayers.removeFirst()
+    fun callExecute(player: Player) {
+        pot += (currentBid - hasDonePlayersAndWager[player]!!)
+        hasDonePlayersAndWager[player] = currentBid
+        waitingPlayers.add(player)
+    }
+
+    fun foldExecute(player: Player) {
         activePlayers.remove(player)
         hasDonePlayersAndWager.remove(player)
-        nextRound()
     }
 
-    fun check() {
-        val player = waitingPlayers.removeFirst()
-        waitingPlayers.add(player)
-        nextRound()
-    }
-
-    fun raise(bid: Int) {
-        val player = waitingPlayers.removeFirst()
+    fun raiseExecute(player: Player) {
+        val bid = player.getRaiseWager()
         currentBid = bid
         pot += bid
-        waitingPlayers.add(player)
         hasDonePlayersAndWager[player] = hasDonePlayersAndWager[player]!! + bid
-        nextRound()
+        waitingPlayers.add(player)
     }
 
-    fun nextRound(){
+    fun checkExecute(player: Player) {
+        waitingPlayers.add(player)
+    }
+
+    private fun nextRound(){
         if (hasDonePlayersAndWager.all { it.value == currentBid } && (hasDonePlayersAndWager.keys.size == activePlayers.size)){
             round = Round.values()[round.ordinal + 1]
         }
