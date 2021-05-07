@@ -7,6 +7,11 @@ class Player(val name: String) {
         return 0
     }
 
+    // TODO: return left money
+    fun getAllInWager(): Int {
+        return 0
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

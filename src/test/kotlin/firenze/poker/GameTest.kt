@@ -149,4 +149,34 @@ internal class GameTest {
         // then
         assertEquals(game.currentBid - previousBid, game.pot - previousPotBeforePlayerATakeAction)
     }
+
+    @Test
+    fun `should add this player to All-In player list and remove from active player list if a player choose to all-in`() {
+        //given
+        val mockPlayerB = mockk<Player>{
+            every { name } returns "B"
+            every { getRaiseWager() } returns 6
+        }
+        val mockPlayerC = mockk<Player>{
+            every { name } returns "C"
+            every { getAllInWager() } returns 4
+        }
+        val game = Game(Player("A"), mockPlayerB, mockPlayerC)
+
+        // when
+        assertEquals("A", game.waitingPlayers.first().name)
+        game.execute(Bet())//1
+        assertEquals("B", game.waitingPlayers.first().name)
+        game.execute(Raise())//6
+        assertEquals(7, game.pot)
+        assertEquals("C", game.waitingPlayers.first().name)
+        game.execute(AllIn())//4
+        assertEquals("A", game.waitingPlayers.first().name)
+        game.execute(Call())//5
+
+        // then
+        assertEquals(16, game.pot)
+        assertEquals(listOf("A", "B"), game.activePlayers.map { it.name })
+        assertEquals(listOf("C"), game.allInPlayers.map { it.name })
+    }
 }

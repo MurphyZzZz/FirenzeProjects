@@ -10,6 +10,7 @@ class Game(private vararg val players: Player) {
     var pot: Int = 0
     val waitingPlayers = mutableListOf(*players)
     val activePlayers = mutableListOf(*players)
+    val allInPlayers = mutableListOf<Player>()
     val hasDonePlayersAndWager = players.associate { it to 0 }.toMutableMap()
 
     fun execute(action: Action) {
@@ -33,7 +34,6 @@ class Game(private vararg val players: Player) {
 
     fun foldExecute(player: Player) {
         activePlayers.remove(player)
-        hasDonePlayersAndWager.remove(player)
     }
 
     fun raiseExecute(player: Player) {
@@ -48,8 +48,18 @@ class Game(private vararg val players: Player) {
         waitingPlayers.add(player)
     }
 
+    fun allInExecute(player: Player) {
+        val bid = player.getAllInWager()
+        currentBid = if (bid > currentBid) bid else currentBid
+        pot += bid
+        hasDonePlayersAndWager[player] = hasDonePlayersAndWager[player]!! + bid
+        activePlayers.remove(player)
+        allInPlayers.add(player)
+    }
+
     private fun nextRound(){
-        if (hasDonePlayersAndWager.all { it.value == currentBid } && (hasDonePlayersAndWager.keys.size == activePlayers.size)){
+        val wagerOfHasDonePlayers = hasDonePlayersAndWager.keys.filter { activePlayers.contains(it) }.map { hasDonePlayersAndWager[it] }
+        if (wagerOfHasDonePlayers.all { it == currentBid } && (hasDonePlayersAndWager.keys.size == activePlayers.size)){
             round = Round.values()[round.ordinal + 1]
         }
     }

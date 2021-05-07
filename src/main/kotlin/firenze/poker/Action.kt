@@ -29,8 +29,15 @@ class Fold: Action {
         game.foldExecute(player)
     }
 }
+
 class Raise: Action {
     override fun execute(player: Player, game: Game) {
         game.raiseExecute(player)
+    }
+}
+
+class AllIn: Action {
+    override fun execute(player: Player, game: Game) {
+        game.allInExecute(player)
     }
 }
