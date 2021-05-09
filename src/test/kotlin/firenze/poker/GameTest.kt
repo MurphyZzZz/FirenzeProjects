@@ -76,4 +76,23 @@ internal class GameTest {
         // then
         assertEquals(true, game.end)
     }
+
+    @Test
+    fun `should end game if only one player left`() {
+        //given
+        val game = Game(playerA, playerB, playerC)
+        game.currentRoundName = Rounds.TURN
+        val round = game.round
+
+        // when
+        assertEquals("A", round.waitingPlayers.first().name)
+        game.execute(Bet())
+        assertEquals("B", round.waitingPlayers.first().name)
+        game.execute(Fold())
+        assertEquals("C", round.waitingPlayers.first().name)
+        game.execute(Fold())
+
+        // then
+        assertEquals(true, game.end)
+    }
 }

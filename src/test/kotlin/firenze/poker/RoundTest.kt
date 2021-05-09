@@ -125,6 +125,25 @@ internal class RoundTest {
     }
 
     @Test
+    fun `should end next round if all players took fold action`() {
+        //given
+        val game = Round(playerA, playerB, playerC)
+
+        // when
+        assertEquals("A", game.waitingPlayers.first().name)
+        game.execute(Fold())
+        assertEquals(false, game.nextRound())
+        assertEquals("B", game.waitingPlayers.first().name)
+        game.execute(Fold())
+        assertEquals(false, game.nextRound())
+        assertEquals("C", game.waitingPlayers.first().name)
+        game.execute(Fold())
+
+        // then
+        assertEquals(true, game.nextRound())
+    }
+
+    @Test
     fun `should not enter next round when some players didn't take bids`() {
         //given
         val round = Round(playerA, playerB, playerC)

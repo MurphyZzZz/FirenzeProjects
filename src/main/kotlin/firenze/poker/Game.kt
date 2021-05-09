@@ -15,18 +15,30 @@ class Game(private vararg val players: Player) {
             if (nextRoundIndex < Rounds.values().size){
                 prepareForNextRound()
             } else {
-                shutDown()
+                endGame()
             }
         }
     }
 
-    private fun shutDown() {
+    private fun endGame(){
+        val winners = shutDown()
+        splitPot(winners)
+    }
+
+    private fun splitPot(winners: List<Player>) {
+    }
+
+    private fun shutDown(): List<Player> {
         end = true
+        return emptyList()
     }
 
     private fun prepareForNextRound(){
         currentRoundName = Rounds.values()[currentRoundName.ordinal + 1]
         val activePlayers = players.filter { it.isActive }.toTypedArray()
+        if (activePlayers.size < 2){
+            endGame()
+        }
         round = Round(*activePlayers)
     }
 }
