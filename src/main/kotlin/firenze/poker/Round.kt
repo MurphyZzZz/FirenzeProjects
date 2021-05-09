@@ -1,11 +1,9 @@
 
 import firenze.poker.Action
 import firenze.poker.Player
-import firenze.poker.enums.Rounds
 
 class Round(private vararg val players: Player) {
 
-    var round: Rounds = Rounds.PREFLOP
     var currentBid: Int = 0
     private var minimumWager: Int = 1
     var pot: Int = 0
@@ -15,7 +13,6 @@ class Round(private vararg val players: Player) {
     fun execute(action: Action) {
         val activePlayer = waitingPlayers.removeFirst()
         action.execute(activePlayer, this)
-        nextRound()
     }
 
     fun betExecute(player: Player) {
@@ -62,14 +59,15 @@ class Round(private vararg val players: Player) {
         hasDonePlayers.add(player)
     }
 
-    private fun nextRound() {
+    fun nextRound(): Boolean {
         val wagerOfHasDonePlayers = hasDonePlayers.filter { it.isActive }.map { it.currentRoundBid }
 
         val allActivePlayers: () -> Set<Player> = { players.filter { it.isActive }.toSet() }
         val numberOfActivePlayers = allActivePlayers().size
 
         if (wagerOfHasDonePlayers.all { it == currentBid } && (hasDonePlayers.size == numberOfActivePlayers)) {
-            round = Rounds.values()[round.ordinal + 1]
+            return true
         }
+        return false
     }
 }
