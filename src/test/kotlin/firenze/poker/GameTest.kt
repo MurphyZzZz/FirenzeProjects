@@ -35,4 +35,45 @@ internal class GameTest {
         // then
         assertEquals(Rounds.FLOP, game.currentRoundName)
     }
+
+    @Test
+    fun `should prepare next round configuration when this round finished`() {
+        //given
+        val game = Game(playerA, playerB, playerC)
+        game.currentRoundName = Rounds.PREFLOP
+        val round = game.round
+
+        // when
+        assertEquals("A", round.waitingPlayers.first().name)
+        game.execute(Bet())
+        assertEquals("B", round.waitingPlayers.first().name)
+        game.execute(Call())
+        assertEquals("C", round.waitingPlayers.first().name)
+        game.execute(Fold())
+
+        // then
+        assertEquals(Rounds.FLOP, game.currentRoundName)
+        assertEquals(0, game.round.pot)
+        assertEquals(0, game.round.currentBid)
+        assertEquals(listOf("A", "B"), game.round.waitingPlayers.map { it.name })
+    }
+
+    @Test
+    fun `should end of the game and shut down if all rounds finished`() {
+        //given
+        val game = Game(playerA, playerB, playerC)
+        game.currentRoundName = Rounds.RIVER
+        val round = game.round
+
+        // when
+        assertEquals("A", round.waitingPlayers.first().name)
+        game.execute(Bet())
+        assertEquals("B", round.waitingPlayers.first().name)
+        game.execute(Call())
+        assertEquals("C", round.waitingPlayers.first().name)
+        game.execute(Call())
+
+        // then
+        assertEquals(true, game.end)
+    }
 }

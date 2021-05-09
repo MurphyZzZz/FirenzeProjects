@@ -60,12 +60,11 @@ class Round(private vararg val players: Player) {
     }
 
     fun nextRound(): Boolean {
-        val wagerOfHasDonePlayers = hasDonePlayers.filter { it.isActive }.map { it.currentRoundBid }
 
         val allActivePlayers: () -> Set<Player> = { players.filter { it.isActive }.toSet() }
-        val numberOfActivePlayers = allActivePlayers().size
+        val wagerOfActivePlayers = allActivePlayers().map { it.currentRoundBid }
 
-        if (wagerOfHasDonePlayers.all { it == currentBid } && (hasDonePlayers.size == numberOfActivePlayers)) {
+        if (wagerOfActivePlayers.all { it == currentBid }) {
             return true
         }
         return false
