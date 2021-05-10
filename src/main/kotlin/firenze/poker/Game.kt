@@ -8,6 +8,8 @@ class Game(vararg val players: Player) {
     var currentRoundName: Rounds = Rounds.PREFLOP
     var end = false
     var totalWager = 0
+    private val deck = Deck()
+    val communityCards = mutableListOf<Card>()
 
     fun execute(action: Action){
         round.execute(action)
@@ -39,6 +41,24 @@ class Game(vararg val players: Player) {
             currentRoundName = Rounds.values()[nextRoundIndex]
             activePlayers.forEach { it.currentRoundBid = 0 }
             round = Round(*activePlayers)
+            dealCommunityCards()
+        }
+    }
+
+    private fun dealCommunityCards() {
+        if (currentRoundName == Rounds.FLOP){
+            for (i in 0..2){
+                communityCards.add(deck.dealCard())
+            }
+        } else {
+            communityCards.add(deck.dealCard())
+        }
+    }
+
+    fun dealCards() {
+        players.forEach { player ->
+                    player.cards.add(deck.dealCard())
+                    player.cards.add(deck.dealCard())
         }
     }
 }

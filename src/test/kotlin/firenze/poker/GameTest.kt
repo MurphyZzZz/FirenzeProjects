@@ -2,6 +2,7 @@ package firenze.poker
 
 import firenze.poker.enums.Rounds
 import io.mockk.every
+import io.mockk.mockk
 import io.mockk.spyk
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -270,5 +271,62 @@ internal class GameTest {
         assertEquals(7, playerC.money)
         assertEquals(11, playerA.money)
         assertEquals(11, playerB.money)
+    }
+
+    @Test
+    fun `should deal two cards for each player before pre-flop`() {
+        // given
+        val game = Game(playerA, playerB, playerC)
+
+        // when
+        assertEquals(0, playerA.cards.size)
+        assertEquals(0, playerB.cards.size)
+        assertEquals(0, playerC.cards.size)
+        game.dealCards()
+
+        // then
+        assertEquals(2, playerA.cards.size)
+        assertEquals(2, playerB.cards.size)
+        assertEquals(2, playerC.cards.size)
+    }
+
+    @Test
+    fun `should deal three community cards at flop round`() {
+        // given
+        val game = Game(playerA, playerB, playerC)
+
+        // when
+        assertEquals(Rounds.PREFLOP, game.currentRoundName)
+        assertEquals(0, game.communityCards.size)
+
+        game.execute(Bet())
+        game.execute(Call())
+        game.execute(Call())
+
+        assertEquals(Rounds.FLOP, game.currentRoundName)
+
+        // then
+        assertEquals(3, game.communityCards.size)
+    }
+
+    @Test
+    fun `should deal one community cards in post-flop round`() {
+        // given
+        val game = Game(playerA, playerB, playerC)
+        game.currentRoundName = Rounds.FLOP
+        game.communityCards.addAll(listOf(mockk(), mockk(), mockk()))
+
+        // when
+        assertEquals(Rounds.FLOP, game.currentRoundName)
+        assertEquals(3, game.communityCards.size)
+
+        game.execute(Bet())
+        game.execute(Call())
+        game.execute(Call())
+
+        assertEquals(Rounds.TURN, game.currentRoundName)
+
+        // then
+        assertEquals(4, game.communityCards.size)
     }
 }

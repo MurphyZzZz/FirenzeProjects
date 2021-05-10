@@ -2,6 +2,7 @@ package firenze.poker
 
 class Player(val name: String, var money: Int) {
 
+    val cards = mutableListOf<Card>()
     var isActive: Boolean = true
     var isAllIn: Boolean = false
     var totalBid = 0
