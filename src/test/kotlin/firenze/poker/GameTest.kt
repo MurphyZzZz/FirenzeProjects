@@ -126,4 +126,149 @@ internal class GameTest {
         assertEquals(3, game.totalWager)
         assertEquals(12, playerA.money)
     }
+
+    @Test
+    fun `should split wager when more one winner with same cards`() {
+        //given
+        playerA.totalBid = 3
+        playerB.totalBid = 3
+        val game = spyk(Game(playerA, playerB, playerC))
+        game.currentRoundName = Rounds.RIVER
+        game.totalWager = 9
+        val round = game.round
+
+        every {
+            game["shutDown"]()
+        } returns listOf(setOf(playerA, playerB))
+
+        // when
+        assertEquals("A", round.waitingPlayers.first().name)
+        game.execute(Bet())
+
+        assertEquals(4, playerA.totalBid)
+        assertEquals(10, playerA.money)
+
+        assertEquals("B", round.waitingPlayers.first().name)
+        game.execute(Call())
+
+        assertEquals(4, playerB.totalBid)
+        assertEquals(10, playerB.money)
+
+        assertEquals("C", round.waitingPlayers.first().name)
+        game.execute(Call())
+
+        // then
+        assertEquals(true, game.end)
+        assertEquals(0, game.totalWager)
+        assertEquals(12, playerA.money)
+        assertEquals(12, playerB.money)
+    }
+
+    @Test
+    fun `should split wager when first winner set has one winner and second set has two winners`() {
+        //given
+        playerA.money = 20
+        playerB.money = 20
+        playerA.totalBid = 4
+        playerB.totalBid = 4
+        playerC.totalBid = 4
+        val game = spyk(Game(playerA, playerB, playerC))
+        game.currentRoundName = Rounds.TURN
+        game.totalWager = 12
+        val round = game.round
+
+        every {
+            game["shutDown"]()
+        } returns listOf(setOf(playerC), setOf(playerA, playerB))
+
+        // when
+        assertEquals("A", round.waitingPlayers.first().name)
+        game.execute(Bet())//1
+
+        assertEquals(5, playerA.totalBid)
+        assertEquals(20, playerA.money)
+
+        assertEquals("B", round.waitingPlayers.first().name)
+        game.execute(Call())//1
+
+        assertEquals(5, playerB.totalBid)
+        assertEquals(20, playerB.money)
+
+        assertEquals("C", round.waitingPlayers.first().name)
+        game.execute(AllIn())//6
+
+        assertEquals(10, playerC.totalBid)
+        assertEquals(10, playerC.money)
+
+        assertEquals("A", round.waitingPlayers.first().name)
+        game.execute(Call())//5
+
+        assertEquals(10, playerA.totalBid)
+
+        assertEquals("B", round.waitingPlayers.first().name)
+        game.execute(Call())//5
+
+        assertEquals(10, playerB.totalBid)
+
+        assertEquals(Rounds.RIVER, game.currentRoundName)
+        assertEquals(listOf("A", "B"), round.waitingPlayers.map { it.name })
+
+        assertEquals("A", round.waitingPlayers.first().name)
+        game.execute(Bet())//1
+
+        assertEquals(1, playerA.currentRoundBid)
+        assertEquals(11, playerA.totalBid)
+
+//        assertEquals("B", round.waitingPlayers.first().name)
+        game.execute(Call())//1
+
+        assertEquals(1, playerB.currentRoundBid)
+        assertEquals(11, playerB.totalBid)
+
+        // then
+        assertEquals(true, game.end)
+        assertEquals(30, playerC.money)
+        assertEquals(10, playerA.money)
+        assertEquals(10, playerB.money)
+    }
+
+    @Test
+    fun `should split wager when first winner set has more than one winner and second set has one winner`() {
+        //given
+        playerA.totalBid = 2
+        playerB.totalBid = 2
+        playerC.totalBid = 7
+        val game = spyk(Game(playerA, playerB, playerC))
+        game.currentRoundName = Rounds.RIVER
+        game.totalWager = 11
+        val round = game.round
+
+        every {
+            game["shutDown"]()
+        } returns listOf(setOf(playerA, playerB), setOf(playerC))
+
+        // when
+        assertEquals("A", round.waitingPlayers.first().name)
+        game.execute(Bet())
+
+        assertEquals(3, playerA.totalBid)
+        assertEquals(10, playerA.money)
+
+        assertEquals("B", round.waitingPlayers.first().name)
+        game.execute(Call())
+
+        assertEquals(3, playerB.totalBid)
+        assertEquals(10, playerB.money)
+
+        assertEquals("C", round.waitingPlayers.first().name)
+        game.execute(Call())
+
+        assertEquals(8, playerC.totalBid)
+
+        // then
+        assertEquals(true, game.end)
+        assertEquals(7, playerC.money)
+        assertEquals(11, playerA.money)
+        assertEquals(11, playerB.money)
+    }
 }
