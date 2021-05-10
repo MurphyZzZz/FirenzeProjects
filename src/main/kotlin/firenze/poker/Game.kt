@@ -3,7 +3,7 @@ package firenze.poker
 import Round
 import firenze.poker.enums.Rounds
 
-class Game(private vararg val players: Player) {
+class Game(vararg val players: Player) {
     var round = Round(*players)
     var currentRoundName: Rounds = Rounds.PREFLOP
     var end = false
@@ -19,54 +19,7 @@ class Game(private vararg val players: Player) {
     private fun endGame(){
         end = true
         val winners = shutDown()
-        cutPlayerBid()
-        splitPot(winners)
-    }
-
-    private fun cutPlayerBid() {
-        players.forEach { player -> player.money -= player.totalBid }
-    }
-
-    private fun splitPot(winnerSets: List<Set<Player>>) {
-        // if there only one winner
-        val winners = winnerSets.flatten()
-        if (winners.size == 1){
-            val playersForOneSet = winnerSets.first()
-            val player = playersForOneSet.first()
-            player.money += totalWager
-            return
-        }
-        // if more than one winner: A > B > C
-        // if more than one winner with same cards
-        winnerSets.forEach { calculateWagerInSidePot(it) }
-    }
-
-    private fun calculateWagerInSidePot(winners: Set<Player>){
-        if (totalWager <= 0) {
-            return
-        }
-
-        if (winners.size == 1){
-            val player = winners.first()
-            if ((player.totalBid * players.size) <= totalWager) {
-                val wager = player.totalBid * players.size
-                player.money += wager
-                totalWager -= wager
-            } else {
-                player.money += totalWager
-                totalWager = 0
-            }
-        } else {
-            val player = winners.first()
-            if ((player.totalBid * players.size) <= totalWager){
-                winners.forEach { it.money += (player.totalBid * players.size / 2) }
-                totalWager -= (player.totalBid * players.size)
-            } else {
-                val eachCut = totalWager / winners.size
-                winners.forEach { it.money += eachCut }
-                totalWager = 0
-            }
-        }
+        WagerCalculator.splitWager(this, winners)
     }
 
     private fun shutDown(): List<Set<Player>> {
