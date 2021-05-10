@@ -1,6 +1,6 @@
 package firenze.poker
 
-class Player(val name: String, val money: Int) {
+class Player(val name: String, var money: Int) {
 
     var isActive: Boolean = true
     var isAllIn: Boolean = false
@@ -12,9 +12,8 @@ class Player(val name: String, val money: Int) {
         return 0
     }
 
-    // TODO: return left money
     fun getAllInWager(): Int {
-        return 0
+        return money - totalBid
     }
 
     fun calculateMoney(bid: Int){

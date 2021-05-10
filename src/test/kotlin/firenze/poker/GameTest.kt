@@ -1,6 +1,8 @@
 package firenze.poker
 
 import firenze.poker.enums.Rounds
+import io.mockk.every
+import io.mockk.spyk
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -94,5 +96,34 @@ internal class GameTest {
 
         // then
         assertEquals(true, game.end)
+    }
+
+    @Test
+    fun `should give all wager to player when only one winner`() {
+        //given
+        val game = spyk(Game(playerA, playerB, playerC))
+        game.currentRoundName = Rounds.RIVER
+        val round = game.round
+
+        every {
+            game["shutDown"]()
+        } returns listOf(setOf(playerA))
+
+        // when
+        assertEquals("A", round.waitingPlayers.first().name)
+        game.execute(Bet())
+
+        assertEquals(1, playerA.totalBid)
+        assertEquals(10, playerA.money)
+
+        assertEquals("B", round.waitingPlayers.first().name)
+        game.execute(Call())
+        assertEquals("C", round.waitingPlayers.first().name)
+        game.execute(Call())
+
+        // then
+        assertEquals(true, game.end)
+        assertEquals(3, game.totalWager)
+        assertEquals(12, playerA.money)
     }
 }
