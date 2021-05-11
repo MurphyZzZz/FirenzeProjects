@@ -62,7 +62,6 @@ internal class WagerCalculatorTest {
         val game = spyk(Game(playerA, playerB, playerC))
         game.currentRoundName = Rounds.TURN
         game.totalWager = 12
-        val round = game.round
 
         // when
         playerA.totalBid = 10

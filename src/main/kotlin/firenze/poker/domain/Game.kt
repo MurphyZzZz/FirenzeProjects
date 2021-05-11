@@ -1,6 +1,7 @@
 package firenze.poker.domain
 
 import firenze.poker.enums.Rounds
+import firenze.poker.utils.CardCalculator
 import firenze.poker.utils.WagerCalculator
 
 class Game(vararg val players: Player) {
@@ -20,12 +21,12 @@ class Game(vararg val players: Player) {
 
     private fun endGame(){
         end = true
-        val winners = shutDown()
-        WagerCalculator.splitWager(this, winners)
+        WagerCalculator.splitWager(this, shutDown())
     }
 
     private fun shutDown(): List<Set<Player>> {
-        return emptyList()
+        val potentialWinners = players.filter { it.isActive || it.isAllIn }
+        return CardCalculator.getWinners(potentialWinners, communityCards)
     }
 
     private fun prepareForNextRound(){

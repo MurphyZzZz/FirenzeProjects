@@ -18,14 +18,14 @@ internal class CardCombinatorTest{
         val card5 = Card(rank = 11, suit = 1)
         val card6 = Card(rank = 12, suit = 1)
         val card7 = Card(rank = 2, suit = 1)
-        val combinator = CardCombinator(setOf(card1, card2, card3, card4, card5, card6, card7))
+        val combinator = CardCombinator(listOf(card1, card2, card3, card4, card5, card6, card7))
 
         // when
-        val result = combinator.evaluateHand()
+        val result = combinator.evaluateBestCombination()
 
         // then
-        assertEquals(Combinations.ROYAL_FLUSH, result.first)
-        assertEquals(listOf(card1, card3, card4, card5, card6), result.second)
+        assertEquals(Combinations.ROYAL_FLUSH, result.name)
+        assertEquals(listOf(card1, card3, card4, card5, card6), result.cards)
     }
 
     @Test
@@ -38,14 +38,14 @@ internal class CardCombinatorTest{
         val card5 = Card(rank = 11, suit = 1)
         val card6 = Card(rank = 12, suit = 1)
         val card7 = Card(rank = 2, suit = 1)
-        val combinator = CardCombinator(setOf(card1, card2, card3, card4, card5, card6, card7))
+        val combinator = CardCombinator(listOf(card1, card2, card3, card4, card5, card6, card7))
 
         // when
-        val result = combinator.evaluateHand()
+        val result = combinator.evaluateBestCombination()
 
         // then
-        assertEquals(Combinations.STRAIGHT_FLUSH, result.first)
-        assertEquals(listOf(card2, card3, card4, card5, card6), result.second)
+        assertEquals(Combinations.STRAIGHT_FLUSH, result.name)
+        assertEquals(listOf(card2, card3, card4, card5, card6), result.cards)
     }
 
     @Test
@@ -58,14 +58,14 @@ internal class CardCombinatorTest{
         val card5 = Card(rank = 1, suit = 3)
         val card6 = Card(rank = 3, suit = 1)
         val card7 = Card(rank = 0, suit = 1)
-        val combinator = CardCombinator(setOf(card1, card2, card3, card4, card5, card6, card7))
+        val combinator = CardCombinator(listOf(card1, card2, card3, card4, card5, card6, card7))
 
         // when
-        val result = combinator.evaluateHand()
+        val result = combinator.evaluateBestCombination()
 
         // then
-        assertEquals(Combinations.FOUR_OF_A_KIND, result.first)
-        assertEquals(listOf(card2, card3, card4, card5, card7), result.second)
+        assertEquals(Combinations.FOUR_OF_A_KIND, result.name)
+        assertEquals(listOf(card2, card3, card4, card5, card7), result.cards)
     }
 
     @Test
@@ -78,14 +78,14 @@ internal class CardCombinatorTest{
         val card5 = Card(rank = 3, suit = 3)
         val card6 = Card(rank = 3, suit = 1)
         val card7 = Card(rank = 0, suit = 1)
-        val combinator = CardCombinator(setOf(card1, card2, card3, card4, card5, card6, card7))
+        val combinator = CardCombinator(listOf(card1, card2, card3, card4, card5, card6, card7))
 
         // when
-        val result = combinator.evaluateHand()
+        val result = combinator.evaluateBestCombination()
 
         // then
-        assertEquals(Combinations.FULL_HOUSE, result.first)
-        assertEquals(listOf(card2, card3, card4, card6, card5), result.second)
+        assertEquals(Combinations.FULL_HOUSE, result.name)
+        assertEquals(listOf(card2, card3, card4, card6, card5), result.cards)
     }
 
     @Test
@@ -98,14 +98,14 @@ internal class CardCombinatorTest{
         val card5 = Card(rank = 5, suit = 0)
         val card6 = Card(rank = 6, suit = 0)
         val card7 = Card(rank = 0, suit = 1)
-        val combinator = CardCombinator(setOf(card1, card2, card3, card4, card5, card6, card7))
+        val combinator = CardCombinator(listOf(card1, card2, card3, card4, card5, card6, card7))
 
         // when
-        val result = combinator.evaluateHand()
+        val result = combinator.evaluateBestCombination()
 
         // then
-        assertEquals(Combinations.FLUSH, result.first)
-        assertEquals(listOf(card2, card3, card4, card5, card6), result.second)
+        assertEquals(Combinations.FLUSH, result.name)
+        assertEquals(listOf(card2, card3, card4, card5, card6), result.cards)
     }
 
     @Test
@@ -118,14 +118,14 @@ internal class CardCombinatorTest{
         val card5 = Card(rank = 5, suit = 0)
         val card6 = Card(rank = 6, suit = 0)
         val card7 = Card(rank = 0, suit = 1)
-        val combinator = CardCombinator(setOf(card1, card2, card3, card4, card5, card6, card7))
+        val combinator = CardCombinator(listOf(card1, card2, card3, card4, card5, card6, card7))
 
         // when
-        val result = combinator.evaluateHand()
+        val result = combinator.evaluateBestCombination()
 
         // then
-        assertEquals(Combinations.STRAIGHT, result.first)
-        assertEquals(listOf(card2, card3, card4, card5, card6), result.second)
+        assertEquals(Combinations.STRAIGHT, result.name)
+        assertEquals(listOf(card2, card3, card4, card5, card6), result.cards)
     }
 
     @Test
@@ -138,14 +138,14 @@ internal class CardCombinatorTest{
         val card5 = Card(rank = 5, suit = 2)
         val card6 = Card(rank = 6, suit = 0)
         val card7 = Card(rank = 0, suit = 1)
-        val combinator = CardCombinator(setOf(card1, card2, card3, card4, card5, card6, card7))
+        val combinator = CardCombinator(listOf(card1, card2, card3, card4, card5, card6, card7))
 
         // when
-        val result = combinator.evaluateHand()
+        val result = combinator.evaluateBestCombination()
 
         // then
-        assertEquals(Combinations.THREE_OF_A_KIND, result.first)
-        assertEquals(listOf(card2, card3, card4, card7, card1), result.second)
+        assertEquals(Combinations.THREE_OF_A_KIND, result.name)
+        assertEquals(listOf(card2, card3, card4, card7, card1), result.cards)
     }
 
     @Test
@@ -158,14 +158,14 @@ internal class CardCombinatorTest{
         val card5 = Card(rank = 3, suit = 1)
         val card6 = Card(rank = 6, suit = 0)
         val card7 = Card(rank = 0, suit = 1)
-        val combinator = CardCombinator(setOf(card1, card2, card3, card4, card5, card6, card7))
+        val combinator = CardCombinator(listOf(card1, card2, card3, card4, card5, card6, card7))
 
         // when
-        val result = combinator.evaluateHand()
+        val result = combinator.evaluateBestCombination()
 
         // then
-        assertEquals(Combinations.TWO_PAIR, result.first)
-        assertEquals(listOf(card4, card5, card2, card3, card7), result.second)
+        assertEquals(Combinations.TWO_PAIR, result.name)
+        assertEquals(listOf(card4, card5, card2, card3, card7), result.cards)
     }
 
     @Test
@@ -178,14 +178,14 @@ internal class CardCombinatorTest{
         val card5 = Card(rank = 5, suit = 0)
         val card6 = Card(rank = 6, suit = 0)
         val card7 = Card(rank = 0, suit = 1)
-        val combinator = CardCombinator(setOf(card1, card2, card3, card4, card5, card6, card7))
+        val combinator = CardCombinator(listOf(card1, card2, card3, card4, card5, card6, card7))
 
         // when
-        val result = combinator.evaluateHand()
+        val result = combinator.evaluateBestCombination()
 
         // then
-        assertEquals(Combinations.ONE_PAIR, result.first)
-        assertEquals(listOf(card2, card3, card7, card6, card1), result.second)
+        assertEquals(Combinations.ONE_PAIR, result.name)
+        assertEquals(listOf(card2, card3, card7, card6, card1), result.cards)
     }
 
     @Test
@@ -198,13 +198,13 @@ internal class CardCombinatorTest{
         val card5 = Card(rank = 5, suit = 0)
         val card6 = Card(rank = 6, suit = 0)
         val card7 = Card(rank = 0, suit = 1)
-        val combinator = CardCombinator(setOf(card1, card2, card3, card4, card5, card6, card7))
+        val combinator = CardCombinator(listOf(card1, card2, card3, card4, card5, card6, card7))
 
         // when
-        val result = combinator.evaluateHand()
+        val result = combinator.evaluateBestCombination()
 
         // then
-        assertEquals(Combinations.HIGH_CARD, result.first)
-        assertEquals(listOf(card7, card1, card6, card5, card4), result.second)
+        assertEquals(Combinations.HIGH_CARD, result.name)
+        assertEquals(listOf(card7, card1, card6, card5, card4), result.cards)
     }
 }

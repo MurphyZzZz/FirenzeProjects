@@ -1,11 +1,12 @@
 package firenze.poker.utils
 
+import firenze.poker.domain.BestCombination
 import firenze.poker.domain.Card
 import firenze.poker.enums.Combinations
 import firenze.poker.exception.NoBestCardsException
 
 
-class CardCombinator(cards: Set<Card>) {
+class CardCombinator(cards: List<Card>) {
 
     companion object {
         val rankSize = Card.ranks.size
@@ -17,25 +18,7 @@ class CardCombinator(cards: Set<Card>) {
     private val rankRecords = IntArray(rankSize) { rankSize * (0) }
     private val suitRecords = IntArray(suitSize) { suitSize * (0) }
 
-
-    private fun sortByRankWithAce(): List<Int> {
-        val ranks = availableCards.sortedByDescending { it.rank }.map { it.rank }.toMutableList()
-        if (getBiggestRankCard().rank == 0){
-            ranks.removeLast()
-            ranks.add(0, 0)
-        }
-        return ranks.toList()
-    }
-
-    private fun getBiggestRankCard(): Card {
-        return availableCards.firstOrNull { it.rank == 0 } ?: availableCards.last()
-    }
-
-    private fun sortByRankThenSuit() {
-        availableCards.sortWith(compareBy(Card::rank, Card::suit))
-    }
-
-    fun evaluateHand(): Pair<Combinations, List<Card>> {
+    fun evaluateBestCombination(): BestCombination {
 
         availableCards.forEach {
             rankRecords[it.rank]++
@@ -67,7 +50,7 @@ class CardCombinator(cards: Set<Card>) {
         throw NoBestCardsException()
     }
 
-    private fun evaluateRoyalFlush(): Pair<Combinations, List<Card>>? {
+    private fun evaluateRoyalFlush(): BestCombination? {
 
         val royalFlushRankIndex = intArrayOf(9, 10, 11, 12, 0)
         val ranks = royalFlushRankIndex.map { rankRecords[it] }
@@ -84,7 +67,7 @@ class CardCombinator(cards: Set<Card>) {
                             availableCards[i].suit == availableCards[i + j].suit && availableCards[i].suit == availableCards[i + j + 1].suit && availableCards[i].suit == availableCards[i + j + 2].suit && availableCards[i].suit == availableCards[i + j + 3].suit
                         ) {
                             (j..(j + 3)).map { bestCards.add(availableCards[i + it]) }
-                            return Combinations.ROYAL_FLUSH to bestCards
+                            return BestCombination(Combinations.ROYAL_FLUSH, bestCards)
                         }
                     }
                 }
@@ -93,7 +76,7 @@ class CardCombinator(cards: Set<Card>) {
         return null
     }
 
-    private fun evaluateStraightFlush(): Pair<Combinations, List<Card>>? {
+    private fun evaluateStraightFlush(): BestCombination? {
         if (suitRecords.any { it > 4 }) {
             for (i in availableCards.size - 1 downTo 4) {
                 if (availableCards[i].rank - 1 == availableCards[i - 1].rank && availableCards[i].rank - 2 == availableCards[i - 2].rank && availableCards[i].rank - 3 == availableCards[i - 3].rank && availableCards[i].rank - 4 == availableCards[i - 4].rank
@@ -101,24 +84,24 @@ class CardCombinator(cards: Set<Card>) {
                     availableCards[i].suit == availableCards[i - 1].suit && availableCards[i].suit == availableCards[i - 2].suit && availableCards[i].suit == availableCards[i - 3].suit && availableCards[i].suit == availableCards[i - 4].suit
                 ) {
                     val bestCards = ((i - 4)..i).map { availableCards[it] }
-                    return Combinations.STRAIGHT_FLUSH to bestCards
+                    return BestCombination(Combinations.STRAIGHT_FLUSH, bestCards)
                 }
             }
         }
         return null
     }
 
-    private fun evaluateFourOfAKind(): Pair<Combinations, List<Card>>? {
+    private fun evaluateFourOfAKind(): BestCombination? {
         for (i in rankRecords.indices) {
             if (rankRecords[i] == 4) {
                 val bestCards = availableCards.filter { it.rank == i } + getBiggestRankCard()
-                return Combinations.FOUR_OF_A_KIND to bestCards
+                return BestCombination(Combinations.FOUR_OF_A_KIND, bestCards)
             }
         }
         return null
     }
 
-    private fun evaluateFullHouse(): Pair<Combinations, List<Card>>? {
+    private fun evaluateFullHouse(): BestCombination? {
         var threeOfKindRankIndex = -1
         var twoOfKindRankIndex = -1
         for (i in (rankRecords.size - 1) downTo 0) {
@@ -134,50 +117,50 @@ class CardCombinator(cards: Set<Card>) {
         }
         if (threeOfKindRankIndex >= 0 && twoOfKindRankIndex >= 0) {
             val bestCards = availableCards.filter { it.rank == threeOfKindRankIndex } + availableCards.filter { it.rank == twoOfKindRankIndex }
-            return Combinations.FULL_HOUSE to bestCards
+            return BestCombination(Combinations.FULL_HOUSE, bestCards)
         }
         return null
     }
 
-    private fun evaluateFlush(): Pair<Combinations, List<Card>>? {
+    private fun evaluateFlush(): BestCombination? {
         if (suitRecords.any { it > 4 }) {
             for (i in (availableCards.size - 1) downTo 4) {
                 if (availableCards[i].suit == availableCards[i - 1].suit && availableCards[i].suit == availableCards[i - 2].suit && availableCards[i].suit == availableCards[i - 3].suit && availableCards[i].suit == availableCards[i - 4].suit) {
                     val bestCards = ((i - 4)..i).map { availableCards[it] }
-                    return Combinations.FLUSH to bestCards
+                    return BestCombination(Combinations.FLUSH, bestCards)
                 }
             }
         }
         return null
     }
 
-    private fun evaluateStraight(): Pair<Combinations, List<Card>>? {
+    private fun evaluateStraight(): BestCombination? {
 
         for (i in (rankRecords.size - 1) downTo 5) {
             if (rankRecords[i] > 0 && rankRecords[i - 1] > 0 && rankRecords[i - 2] > 0 && rankRecords[i - 3] > 0 && rankRecords[i - 4] > 0
             ) {
                 val firstIndex = availableCards.indexOfFirst { it.rank == i }
                 val bestCards = ((firstIndex - 4) .. firstIndex).map { availableCards[it] }
-                return Combinations.STRAIGHT to bestCards
+                return BestCombination(Combinations.STRAIGHT, bestCards)
             }
         }
         return null
     }
 
-    private fun evaluateThreeOfAKind(): Pair<Combinations, List<Card>>? {
+    private fun evaluateThreeOfAKind(): BestCombination? {
         for (i in (rankRecords.size - 1) downTo 0) {
             if (rankRecords[i] > 2) {
                 val firstIndex = availableCards.indexOfFirst { it.rank == i }
                 val firstTwo = sortByRankWithAce().filter { it != i }.subList(0,2)
                 val firstTwoCards = availableCards.filter { firstTwo.contains(it.rank) }
                 val bestCards = (firstIndex .. (firstIndex + 2)).map { availableCards[it] } + firstTwoCards
-                return Combinations.THREE_OF_A_KIND to bestCards
+                return BestCombination(Combinations.THREE_OF_A_KIND, bestCards)
             }
         }
         return null
     }
 
-    private fun evaluateTwoPair(): Pair<Combinations, List<Card>>? {
+    private fun evaluateTwoPair(): BestCombination? {
         var firstPairRankIndex = -1
         var secondPairRankIndex = -1
         for (i in (rankRecords.size - 1) downTo 0) {
@@ -196,26 +179,43 @@ class CardCombinator(cards: Set<Card>) {
             val first = sortByRankWithAce().first { it != firstPairRankIndex && it != secondPairRankIndex }
             val firstCards = availableCards.filter { first == it.rank }
             val bestCards = availableCards.filter { it.rank == firstPairRankIndex } + availableCards.filter { it.rank == secondPairRankIndex } + firstCards
-            return Combinations.TWO_PAIR to bestCards
+            return BestCombination(Combinations.TWO_PAIR, bestCards)
 
         }
         return null
     }
 
-    private fun evaluateOnePair(): Pair<Combinations, List<Card>>? {
+    private fun evaluateOnePair(): BestCombination? {
         for (i in (rankRecords.size - 1) downTo 0) {
             if (rankRecords[i] > 1) {
                 val firstThree = sortByRankWithAce().filter { it != i }.subList(0, 3)
                 val firstThreeCards = availableCards.filter { firstThree.contains(it.rank) }
                 val bestCards = availableCards.filter { it.rank == i } + firstThreeCards
-                return Combinations.ONE_PAIR to bestCards
+                return BestCombination(Combinations.ONE_PAIR, bestCards)
             }
         }
         return null
     }
 
-    private fun evaluateHighCard(): Pair<Combinations, List<Card>> {
+    private fun evaluateHighCard(): BestCombination {
         val bestCards = listOf(getBiggestRankCard()) + ((availableCards.size - 1) downTo (availableCards.size - 4)).map { availableCards[it] }
-        return Combinations.HIGH_CARD to bestCards
+        return BestCombination(Combinations.HIGH_CARD, bestCards)
+    }
+
+    private fun sortByRankWithAce(): List<Int> {
+        val ranks = availableCards.sortedByDescending { it.rank }.map { it.rank }.toMutableList()
+        if (getBiggestRankCard().rank == 0){
+            ranks.removeLast()
+            ranks.add(0, 0)
+        }
+        return ranks.toList()
+    }
+
+    private fun getBiggestRankCard(): Card {
+        return availableCards.firstOrNull { it.rank == 0 } ?: availableCards.last()
+    }
+
+    private fun sortByRankThenSuit() {
+        availableCards.sortWith(compareBy(Card::rank, Card::suit))
     }
 }

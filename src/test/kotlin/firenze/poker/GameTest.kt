@@ -7,9 +7,15 @@ import firenze.poker.domain.Fold
 import firenze.poker.domain.Game
 import firenze.poker.domain.Player
 import firenze.poker.enums.Rounds
+import firenze.poker.utils.CardCalculator
+import firenze.poker.utils.WagerCalculator
+import io.mockk.Runs
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.spyk
+import io.mockk.unmockkObject
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -70,9 +76,19 @@ internal class GameTest {
     @Test
     fun `should end of the game and shut down if all rounds finished`() {
         //given
-        val game = Game(playerA, playerB, playerC)
+        val game = spyk(Game(playerA, playerB, playerC))
         game.currentRoundName = Rounds.RIVER
         val round = game.round
+
+        mockkObject(CardCalculator)
+        every {
+            CardCalculator.getWinners(listOf(playerA, playerB, playerC), any())
+        } returns emptyList()
+
+        mockkObject(WagerCalculator)
+        every {
+            WagerCalculator.splitWager(any(), any())
+        } just Runs
 
         // when
         assertEquals("A", round.waitingPlayers.first().name)
@@ -84,14 +100,26 @@ internal class GameTest {
 
         // then
         assertEquals(true, game.end)
+        unmockkObject(WagerCalculator)
+        unmockkObject(CardCalculator)
     }
 
     @Test
     fun `should end game if only one player left`() {
         //given
-        val game = Game(playerA, playerB, playerC)
+        val game = spyk(Game(playerA, playerB, playerC))
         game.currentRoundName = Rounds.TURN
         val round = game.round
+
+        mockkObject(CardCalculator)
+        every {
+            CardCalculator.getWinners(listOf(playerA), any())
+        } returns emptyList()
+
+        mockkObject(WagerCalculator)
+        every {
+            WagerCalculator.splitWager(any(), any())
+        } just Runs
 
         // when
         assertEquals("A", round.waitingPlayers.first().name)
@@ -103,6 +131,8 @@ internal class GameTest {
 
         // then
         assertEquals(true, game.end)
+        unmockkObject(WagerCalculator)
+        unmockkObject(CardCalculator)
     }
 
     @Test
