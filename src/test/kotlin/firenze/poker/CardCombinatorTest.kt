@@ -1,6 +1,8 @@
 package firenze.poker
 
+import firenze.poker.domain.Card
 import firenze.poker.enums.Combinations
+import firenze.poker.utils.CardCombinator
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 

@@ -1,5 +1,6 @@
 package firenze.poker
 
+import firenze.poker.domain.Player
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 

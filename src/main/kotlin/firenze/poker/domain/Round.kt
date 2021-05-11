@@ -1,6 +1,4 @@
-
-import firenze.poker.Action
-import firenze.poker.Player
+package firenze.poker.domain
 
 class Round(private vararg val players: Player) {
 

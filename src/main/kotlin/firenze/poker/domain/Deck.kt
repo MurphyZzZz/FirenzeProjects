@@ -1,4 +1,4 @@
-package firenze.poker
+package firenze.poker.domain
 
 class Deck {
     private val cards = initCards()

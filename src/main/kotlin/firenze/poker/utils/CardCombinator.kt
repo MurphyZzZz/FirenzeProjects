@@ -1,5 +1,6 @@
-package firenze.poker
+package firenze.poker.utils
 
+import firenze.poker.domain.Card
 import firenze.poker.enums.Combinations
 import firenze.poker.exception.NoBestCardsException
 

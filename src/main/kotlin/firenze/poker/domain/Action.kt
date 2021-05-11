@@ -1,6 +1,4 @@
-package firenze.poker
-
-import Round
+package firenze.poker.domain
 
 interface Action {
     fun execute(player: Player, round: Round)

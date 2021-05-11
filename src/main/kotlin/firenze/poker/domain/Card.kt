@@ -1,4 +1,4 @@
-package firenze.poker
+package firenze.poker.domain
 
 data class Card(
     val rank: Int,

@@ -1,4 +1,4 @@
-package firenze.poker
+package firenze.poker.domain
 
 class Player(val name: String, var money: Int) {
 

@@ -1,4 +1,7 @@
-package firenze.poker
+package firenze.poker.utils
+
+import firenze.poker.domain.Game
+import firenze.poker.domain.Player
 
 class WagerCalculator {
     companion object {

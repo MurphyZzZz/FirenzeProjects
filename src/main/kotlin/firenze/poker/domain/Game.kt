@@ -1,7 +1,7 @@
-package firenze.poker
+package firenze.poker.domain
 
-import Round
 import firenze.poker.enums.Rounds
+import firenze.poker.utils.WagerCalculator
 
 class Game(vararg val players: Player) {
     var round = Round(*players)
